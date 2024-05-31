@@ -1,0 +1,27 @@
+# general
+device: 'cuda'
+
+# data
+input_video: 'input/sample.mp4'
+output_path: 'output'
+ddim_latents_path: 'initial_latents'
+w: 512
+h: 512
+
+# diffusion
+guidance_scale: 7.5
+n_timesteps: 50
+target_prompt: "A man wears a yellow shirt"
+negative_prompt: "ugly, blurry, low res, unrealistic, unaesthetic"
+
+# quality enhancemet module
+module: 'propagation' # propagation or attention
+#module: 'attention' # propagation or attention
+
+# frag
+min_size: 2 # high min_size -- fast edit, low quality
+scheduler_beta: 0.7 # leverage scheduler low beta -- start with multiple groups
+
+# pnp params -- injection thresholds [0, 1]
+pnp_attn_t: 0.5
+pnp_f_t: 0.8

@@ -1,0 +1,16 @@
+ddim_latents_path: initial_latents
+device: cuda
+guidance_scale: 7.5
+h: 512
+input_video: input/sample.mp4
+min_size: 2
+module: propagation
+n_timesteps: 50
+negative_prompt: ugly, blurry, low res, unrealistic, unaesthetic
+output_path: output/sample
+pnp_attn_t: 0.5
+pnp_f_t: 0.8
+scheduler_beta: 0.7
+target_prompt: A man wears a yellow shirt
+video_name: sample
+w: 512
