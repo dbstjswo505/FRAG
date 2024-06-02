@@ -64,7 +64,7 @@ def Build_APF(shape, r, device, sigma=0.25, frame_wise=False):
     return mask
 
 # Spatial Moment Adaption
-def SMA(x, x_prev):
+def SMA(x, x_prev, d_0=0.2):
     x_freq = fft.fftn(x, dim=(-2, -1))
     x_freq = fft.fftshift(x_freq, dim=(-2, -1))
     x_freq = torch.abs(x_freq)
@@ -91,7 +91,7 @@ def SMA(x, x_prev):
     rx = torch.div(zx_sum_x, z_sum_x)
     rx = rx / int(W/2)
 
-    r = torch.sqrt(rx*rx + ry*ry) + 0.2 # d_{0} = 0.2 standing for 0.2 * 32
+    r = torch.sqrt(rx*rx + ry*ry) + d_0 # d_0 = 0.2 standing for 0.2 * 32=6
     return r
 
 # Frequency Adaptive Refinement
@@ -116,17 +116,16 @@ def TemporalGroup(feat, t, min_g=4, sc_beta=1):
     L,D = mft.shape
     fl = mft[:-1]
     fr = mft[1:]
+    # compute feature distance
     dst_raw = torch.sqrt(torch.sum(torch.pow(torch.subtract(fl, fr), 2), dim=-1))
     
-    # minimum size of group should be more than 2 (for propagation)
     rank0 = []
+    # minimum size of group
     # large F => fast but low qulaity
     F = min_g
     for i in range(0, L, F):
-        #rank0.append([i,i+1])
         rank0.append([i+f for f in range(F)])
     if rank0[-1][-1] != L-1:
-        #rank0[-1] = [L-1]
         a = rank0[-2][-1] + 1
         rank0[-1] = [i for i in range(a, L)]
     N = math.ceil(L/F)-1
@@ -136,9 +135,13 @@ def TemporalGroup(feat, t, min_g=4, sc_beta=1):
     ranked_linkage = torch.argsort(dst, descending=False)
     # scheduler
     n_root = len(dst)
-    alpha = math.e - 1
-    beta = sc_beta # 1<beta<3
-    n_cut = math.ceil(n_root * math.log(alpha*t/(1000) + 1) * beta)
+    beta = sc_beta # 0<beta<3
+    T = 1000
+    alpha = -1/math.log(T-1)
+    n_cut = math.ceil((alpha*math.log(T-t)+1)*n_root * beta)
+    if n_cut > n_root:
+        n_cut = n_root
+    print(f"tree cut: {n_cut}")
 
     # cluster
     merge_idx = ranked_linkage[:n_cut]

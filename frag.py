@@ -58,6 +58,7 @@ class FRAG(nn.Module):
         src_prompt_path = os.path.join(self.ddim_latents_path, 'source_prompt', 'source_prompt.txt')
         with open(src_prompt_path, 'r') as f:
             src_prompt = f.read()
+        self.config["source_prompt"] = src_prompt
         self.source_embeds = self.get_text_embeds(src_prompt, src_prompt).chunk(2)[0]
 
     @torch.no_grad()
@@ -187,6 +188,8 @@ class FRAG(nn.Module):
         # decoding
         edited_frames = self.decode_latents(denoised_latents)
         save_video(edited_frames, f'{self.config["output_path"]}/{self.config["video_name"]}.mp4', fps=self.config['fps'])
+        with open(os.path.join(self.config["output_path"], "config.yaml"), "w") as f:
+            yaml.dump(self.config, f)
         print('Finish editing!')
 
 def run(config):
@@ -209,6 +212,6 @@ if __name__ == '__main__':
     config["output_path"] = os.path.join(config["output_path"], video_name)
     config["video_name"] = video_name
     os.makedirs(config["output_path"], exist_ok=True)
-    with open(os.path.join(config["output_path"], "config.yaml"), "w") as f:
-        yaml.dump(config, f)
+    target_prompt = config["target_prompt"]
+    print(f"Target prompt: {target_prompt}")
     run(config)

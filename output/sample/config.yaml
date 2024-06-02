@@ -1,16 +1,19 @@
 ddim_latents_path: initial_latents
 device: cuda
+fps: 10.0
 guidance_scale: 7.5
 h: 512
 input_video: input/sample.mp4
-min_size: 2
-module: propagation
+min_size: 5
+module: attention
 n_timesteps: 50
 negative_prompt: ugly, blurry, low res, unrealistic, unaesthetic
 output_path: output/sample
 pnp_attn_t: 0.5
 pnp_f_t: 0.8
-scheduler_beta: 0.7
+scheduler_beta: 3.0
+source_prompt: A man wears a green shirt
 target_prompt: A man wears a yellow shirt
+vid_len: 30
 video_name: sample
 w: 512

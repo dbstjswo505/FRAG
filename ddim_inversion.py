@@ -1,6 +1,5 @@
 from transformers import CLIPTextModel, CLIPTokenizer, logging
 from diffusers import AutoencoderKL, UNet2DConditionModel, DDIMScheduler
-# suppress partial model loading warning
 logging.set_verbosity_error()
 
 import os
@@ -85,15 +84,10 @@ def run(opt):
     ######### Stable Diffusion Setting ###################
     # sd version, empirically 2.1 gives more better results
     sd_v = "stabilityai/stable-diffusion-2-1-base"
-    # ddim scheduler 
     ddim_scheduler = DDIMScheduler.from_pretrained(sd_v, subfolder="scheduler")
-    # timesteps for ddim latent injection
-    # image encoder
     vae = AutoencoderKL.from_pretrained(sd_v, subfolder="vae", revision="fp16", torch_dtype=torch.float16).to(opt.device)
-    # text encoder
     tokenizer = CLIPTokenizer.from_pretrained(sd_v, subfolder="tokenizer")
     text_encoder = CLIPTextModel.from_pretrained(sd_v, subfolder="text_encoder", revision="fp16", torch_dtype=torch.float16).to(opt.device)
-    # denoising unet
     unet = UNet2DConditionModel.from_pretrained(sd_v, subfolder="unet", revision="fp16", torch_dtype=torch.float16).to(opt.device)
     
     ######### input video latent #########################
@@ -128,5 +122,6 @@ if __name__ == "__main__":
     parser.add_argument('--save_steps', type=int, default=50)
     parser.add_argument('--source_prompt', type=str, default='A man wears a green shirt')
     opt = parser.parse_args()
+    print(f"source_prompt: {opt.source_prompt}")
     opt.video_name = Path(opt.input_video).stem
     run(opt)

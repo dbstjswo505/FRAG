@@ -19,8 +19,10 @@ module: 'propagation' # propagation or attention
 #module: 'attention' # propagation or attention
 
 # frag
-min_size: 2 # high min_size -- fast edit, low quality
-scheduler_beta: 0.7 # leverage scheduler low beta -- start with multiple groups
+min_size: 1 # high min_size -- fast edit, low quality 
+scheduler_beta: 3.00 
+# leverage scheduler, (optional, 0<beta<5) high => start with large groups for low frequency
+# too high value can lose highfrequency details
 
 # pnp params -- injection thresholds [0, 1]
 pnp_attn_t: 0.5
