@@ -371,8 +371,8 @@ def register_extended_attention_pnp(model, injection_schedule):
             module.forward = sa_forward(module)
             setattr(module, 'injection_schedule', injection_schedule)
 
-def attention_block(block_class: Type[torch.nn.Module]) -> Type[torch.nn.Module]:
-    class temp_att(block_class):
+def basic_attention_block(block_class: Type[torch.nn.Module]) -> Type[torch.nn.Module]:
+    class basic_attention(block_class):
         def forward(
             self,
             hidden_states,
@@ -401,7 +401,6 @@ def attention_block(block_class: Type[torch.nn.Module]) -> Type[torch.nn.Module]
 
             # 1. Self-Attention
             cross_attention_kwargs = cross_attention_kwargs if cross_attention_kwargs is not None else {}
-            # change to TAV temporal attention
             attn_output = self.attn1(
                     norm_hidden_states.view(batch_size, sequence_length, dim),
                     encoder_hidden_states=encoder_hidden_states if self.only_cross_attention else None,
@@ -436,7 +435,94 @@ def attention_block(block_class: Type[torch.nn.Module]) -> Type[torch.nn.Module]
                 ff_output = gate_mlp.unsqueeze(1) * ff_output
             hidden_states = ff_output + hidden_states
             return hidden_states
-    return temp_att
+    return basic_attention
+
+def causal_attention_block(block_class: Type[torch.nn.Module]) -> Type[torch.nn.Module]:
+    class causal_attention(block_class):
+        def forward(
+            self,
+            hidden_states,
+            attention_mask=None,
+            encoder_hidden_states=None,
+            encoder_attention_mask=None,
+            timestep=None,
+            cross_attention_kwargs=None,
+            class_labels=None,
+            low_freq=None,
+        ) -> torch.Tensor:
+            
+            batch_size, sequence_length, dim = hidden_states.shape
+            n_frames = batch_size // 3
+            hidden_states = hidden_states.view(3, n_frames, sequence_length, dim)
+
+            if self.use_ada_layer_norm:
+                norm_hidden_states = self.norm1(hidden_states, timestep)
+            elif self.use_ada_layer_norm_zero:
+                norm_hidden_states, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.norm1(
+                    hidden_states, timestep, class_labels, hidden_dtype=hidden_states.dtype
+                )
+            else:
+                norm_hidden_states = self.norm1(hidden_states)
+            norm_hidden_states = norm_hidden_states.view(3, n_frames, sequence_length, dim)
+
+            # 1. Self-Attention
+            cross_attention_kwargs = cross_attention_kwargs if cross_attention_kwargs is not None else {}
+            # Method of TAV and FateZero
+            index = 'mid'
+            # TAV
+            if index == 'first':
+                f = [0] * n_frames
+                frame_index = torch.arange(n_frames) - 1
+                frame_index[0] = 0
+            # FateZero
+            elif index == 'last':
+                f = [clip_length-1] * n_frames
+                frame_index = torch.arange(n_frames)
+            elif index == 'mid':
+                f = [int(n_frames-1)//2] * n_frames
+                frame_index = torch.arange(n_frames)
+            else:
+                f = [0] * n_frames
+                frame_index = torch.arange(n_frames)
+
+            key = torch.cat([norm_hidden_states[:, f], norm_hidden_states[:, frame_index]], dim=2)
+            query = torch.cat([norm_hidden_states, norm_hidden_states], dim=2)
+            attn_output = self.attn1(
+                    query.view(batch_size, sequence_length*2, dim),
+                    encoder_hidden_states=key.view(batch_size, sequence_length*2, dim),
+                    **cross_attention_kwargs,
+                )
+            attn_output = attn_output[:,:sequence_length,:]
+            if self.use_ada_layer_norm_zero:
+                self.attn_output = gate_msa.unsqueeze(1) * self.attn_output
+            
+            hidden_states = hidden_states.reshape(batch_size, sequence_length, dim)  # 3 * n_frames, seq_len, dim
+            hidden_states = attn_output + hidden_states
+
+            if self.attn2 is not None:
+                norm_hidden_states = (
+                    self.norm2(hidden_states, timestep) if self.use_ada_layer_norm else self.norm2(hidden_states)
+                )
+                # 2. Cross-Attention
+                attn_output = self.attn2(
+                    norm_hidden_states,
+                    encoder_hidden_states=encoder_hidden_states,
+                    attention_mask=encoder_attention_mask,
+                    **cross_attention_kwargs,
+                )
+                attn_output = attn_output.reshape(batch_size, sequence_length, dim)
+                hidden_states = attn_output + hidden_states
+
+            # 3. Feed-forward
+            norm_hidden_states = self.norm3(hidden_states)
+            if self.use_ada_layer_norm_zero:
+                norm_hidden_states = norm_hidden_states * (1 + scale_mlp[:, None]) + shift_mlp[:, None]
+            ff_output = self.ff(norm_hidden_states)
+            if self.use_ada_layer_norm_zero:
+                ff_output = gate_mlp.unsqueeze(1) * ff_output
+            hidden_states = ff_output + hidden_states
+            return hidden_states
+    return causal_attention
 
 def propagation_block(block_class: Type[torch.nn.Module]) -> Type[torch.nn.Module]:
 
@@ -467,7 +553,7 @@ def propagation_block(block_class: Type[torch.nn.Module]) -> Type[torch.nn.Modul
             else:
                 norm_hidden_states = self.norm1(hidden_states)
             norm_hidden_states = norm_hidden_states.view(3, n_frames, sequence_length, dim)
-
+            
             if self.propagation_pass:
                 self.keyframe_hidden_states = norm_hidden_states # [3, 4, 4096, 320]
             else:
@@ -568,8 +654,10 @@ def register_frag(model: torch.nn.Module, vqe_module):
         if isinstance_str(module, "BasicTransformerBlock"):
             if vqe_module == 'propagation':
                 vqe_block_fn = propagation_block 
-            elif vqe_module == 'attention':
-                vqe_block_fn = attention_block
+            elif vqe_module == 'basic_attention':
+                vqe_block_fn = basic_attention_block
+            elif vqe_module == 'causal_attention':
+                vqe_block_fn = causal_attention_block
             else:
                 assert 0, 'No video quality enhancement module'
 

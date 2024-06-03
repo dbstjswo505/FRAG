@@ -14,12 +14,13 @@ n_timesteps: 50
 target_prompt: "A man wears a yellow shirt"
 negative_prompt: "ugly, blurry, low res, unrealistic, unaesthetic"
 
-# quality enhancemet module
-module: 'propagation' # propagation or attention
-#module: 'attention' # propagation or attention
+# quality enhancemet module: propagation, attention
+module: 'propagation'
+#module: 'basic_attention'
+#module: 'causal_attention'
 
 # frag
-min_size: 1 # high min_size -- fast edit, low quality 
+min_size: 1 # high min_size -- fast edit, low quality, attention: 5 > min_size
 scheduler_beta: 3.00 
 # leverage scheduler, (optional, 0<beta<5) high => start with large groups for low frequency
 # too high value can lose highfrequency details
