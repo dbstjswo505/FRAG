@@ -4,7 +4,7 @@
 
 <figure class="video_container">
  <video controls="true" allowfullscreen="true">
- <source src="./asset/frag_demo.mp4" type="video/mp4">
+ <source src="asset/frag_demo.mp4" type="video/mp4">
  </video>
 </figure>
 
@@ -20,12 +20,12 @@ conda activate frag
 pip install -r requirements.txt
 ```
 ## DDIM inversion
-
-Preprocess you video by running using the following command:
+Type source prompt in config/config_sample.yaml to get ddim latent features.
 ```
 python ddim_inversion.py
 ```
 ## Editing
+Type target prompt in config/config_sample.yaml to get edited video.
 ```
 python frag.py
 ```
