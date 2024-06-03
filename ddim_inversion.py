@@ -14,6 +14,7 @@ from torchvision.io import read_video, write_video
 from pathlib import Path
 import torchvision.transforms as T
 from PIL import Image
+import yaml
 import pdb
 
 @torch.no_grad()
@@ -113,14 +114,19 @@ def run(opt):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--device', type=str, default='cuda') 
-    parser.add_argument('--input_video', type=str, default='input/sample.mp4') 
-    parser.add_argument('--h', type=int, default=512, help='input video height')
-    parser.add_argument('--w', type=int, default=512, help='input video width')
+    config_path = 'configs/config_sample3.yaml'
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+    # input: from configuration
+    parser.add_argument('--device', type=str, default=config['device']) 
+    parser.add_argument('--input_video', type=str, default=config['input_video']) 
+    parser.add_argument('--h', type=int, default=config['h'])
+    parser.add_argument('--w', type=int, default=config['w'])
+    parser.add_argument('--save_steps', type=int, default=config['n_timesteps'])
+    parser.add_argument('--source_prompt', type=str, default=config['source_prompt'])
+    # output
     parser.add_argument('--out_dir', type=str, default='initial_latents')
     parser.add_argument('--steps', type=int, default=500)
-    parser.add_argument('--save_steps', type=int, default=50)
-    parser.add_argument('--source_prompt', type=str, default='A man wears a green shirt')
     opt = parser.parse_args()
     print(f"source_prompt: {opt.source_prompt}")
     opt.video_name = Path(opt.input_video).stem

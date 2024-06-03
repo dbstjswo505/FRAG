@@ -204,7 +204,7 @@ def run(config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config_path', type=str, default='configs/config_sample.yaml')
+    parser.add_argument('--config_path', type=str, default='configs/config_sample3.yaml')
     opt = parser.parse_args()
     with open(opt.config_path, "r") as f:
         config = yaml.safe_load(f)

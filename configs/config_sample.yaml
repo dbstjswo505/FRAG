@@ -11,7 +11,8 @@ h: 512
 # diffusion
 guidance_scale: 7.5
 n_timesteps: 50
-target_prompt: "A man wears a yellow shirt"
+source_prompt: "A woman is eating a pizza"
+target_prompt: "A smiling woman is eating a pizza with various toppings"
 negative_prompt: "ugly, blurry, low res, unrealistic, unaesthetic"
 
 # quality enhancemet module: propagation, attention
@@ -20,7 +21,7 @@ module: 'propagation'
 #module: 'causal_attention'
 
 # frag
-min_size: 1 # high min_size -- fast edit, low quality, attention: 5 > min_size
+min_size: 4 # high min_size -- fast edit, low quality, attention: 5 > min_size
 scheduler_beta: 3.00 
 # leverage scheduler, (optional, 0<beta<5) high => start with large groups for low frequency
 # too high value can lose highfrequency details
