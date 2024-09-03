@@ -34,3 +34,15 @@ This code is implemented on top of following contributions: [TAV](https://github
 We thank the authors for open-sourcing these great projects and papers!
 
 This work was supported by Institute for Information & communications Technology Planning & Evaluation (IITP) grant funded by the Korea government(MSIT) (No. 2021-0-01381, Development of Causal AI through Video Understanding and Reinforcement Learning, and Its Applications to Real Environments) and partly supported by Institute of Information & communications Technology Planning & Evaluation (IITP) grant funded by the Korea government(MSIT) (No.2022-0-00184, Development and Study of AI Technologies to Inexpensively Conform to Evolving Policy on Ethics).
+
+## Citation
+Please kindly cite our paper if you use our code, data, models or results:
+
+```bibtex
+@article{yoon2024frag,
+  title={FRAG: Frequency Adapting Group for Diffusion Video Editing},
+  author={Yoon, Sunjae and Koo, Gwanhyeong and Kim, Geonwoo and Yoo, Chang D},
+  journal={arXiv preprint arXiv:2406.06044},
+  year={2024}
+}
+```
