@@ -1,12 +1,9 @@
 # FRAG: Frequency Adaptive Group for Diffusion Video Editing, ICML 2024
 
-[![arXiv](https://img.shields.io/badge/arXiv-FRAG-b31b1b.svg)](https://arxiv.org/abs/2307.10373) 
+[![arXiv](https://img.shields.io/badge/arXiv-FRAG-b31b1b.svg)]((https://arxiv.org/abs/2307.10373) 
 
-<figure class="video_container">
- <video controls="true" allowfullscreen="true">
- <source src="asset/frag_demo.mp4" type="video/mp4">
- </video>
-</figure>
+[![Video Label](http://img.youtube.com/vi/9XPNElLv3Y4&t=6s/0.jpg)](https://youtu.be/9XPNElLv3Y4&t=6s)
+
 
 **FRAG** is a framework that enhances the quality of edited videos by effectively preserving high-frequency components.
 
