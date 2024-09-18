@@ -1,4 +1,5 @@
 # FRAG: Frequency Adaptive Group for Diffusion Video Editing, ICML 2024
+## [<a href="https://dbstjswo505.github.io/FRAG-page/" target="_blank">Project Page</a>]
 
 [![arXiv](https://img.shields.io/badge/arXiv-FRAG-b31b1b.svg)](https://arxiv.org/abs/2406.06044) 
 
