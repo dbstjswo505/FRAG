@@ -6,6 +6,7 @@
 ## 🔥 Teaser Demo
 <p align="center">
   <img src="asset/frag_demo.gif" width="720"/>
+  
   <i>If the video does not load, watch it on <a href="https://youtu.be/9XPNElLv3Y4">YouTube</a>.</i>
 </p>
 
