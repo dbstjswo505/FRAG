@@ -28,6 +28,27 @@ Type target prompt in config/config_sample.yaml to get edited video.
 python frag.py
 ```
 
+## ⚙️ Configuration Options  
+
+FRAG provides flexible options to balance **speed ↔ quality** and to leverage **temporal receptive fields** for video editing.  
+You can modify these parameters in `config/config_sample.yaml`.  
+
+### 🔧 Quality Enhancement Modules  
+Choose between different enhancement modules:  
+
+```yaml
+# quality enhancement module: propagation, attention
+module: 'propagation'         # default option
+#module: 'basic_attention'    # simple attention module
+#module: 'causal_attention'   # causal attention for temporal consistency
+```
+
+### Control FRAG
+```
+min_size: 4            # smaller = higher quality, slower; larger = faster, lower quality
+scheduler_beta: 3.00   # leverage scheduler (optional, 0 < beta < 5)
+```
+
 ## Acknowledgement
 
 This code is implemented on top of following contributions: [TAV](https://github.com/showlab/Tune-A-Video), [TokenFlow](https://github.com/omerbt/TokenFlow), [HuggingFace](https://github.com/huggingface/transformers), [FLATTEN](https://github.com/yrcong/flatten), [FateZero](https://github.com/ChenyangQiQi/FateZero), [Prompt-to-prompt](https://github.com/google/prompt-to-prompt) 
