@@ -5,7 +5,8 @@
 
 ## 🔥 Teaser Demo
 <p align="center">
-  <video src="assets/frag_demo.mp4" width="720" autoplay loop muted playsinline></video>
+  <video src="asset/frag_demo.mp4" width="720" autoplay loop muted playsinline></video><br>
+  <i>If the video does not load, watch it on <a href="https://youtu.be/9XPNElLv3Y4">YouTube</a>.</i>
 </p>
 
 **FRAG** is a framework that enhances the quality of edited videos by effectively preserving high-frequency components.
