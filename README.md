@@ -3,8 +3,9 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-FRAG-b31b1b.svg)](https://arxiv.org/abs/2406.06044) 
 
+## 🔥 Teaser Demo
 <p align="center">
-  <video src="asset/frag_demo.mp4.mp4" width="720" autoplay loop muted playsinline></video>
+  <video src="assets/frag_demo.mp4" width="720" autoplay loop muted playsinline></video>
 </p>
 
 **FRAG** is a framework that enhances the quality of edited videos by effectively preserving high-frequency components.
