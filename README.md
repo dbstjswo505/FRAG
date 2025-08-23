@@ -6,9 +6,6 @@
 ## 🔥 Teaser Demo
 <p align="center">
   <img src="asset/frag_demo.gif" width="720"/>
-</p>
-<p align="center">
-  <video src="asset/frag_demo.mp4" width="720" autoplay loop muted playsinline></video><br>
   <i>If the video does not load, watch it on <a href="https://youtu.be/9XPNElLv3Y4">YouTube</a>.</i>
 </p>
 
